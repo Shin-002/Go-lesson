@@ -104,7 +104,7 @@
                 indexes: [],
                 values: [],
                 first: null
-            },
+            }
         };
 
         function initConfigValues(){
@@ -131,6 +131,7 @@
             config.hv.indexes = [];
             config.hv.periods = [];
             config.hv.values = [];
+            config.events.indexes = [];
             config.events.values = [];
         }
 
@@ -548,24 +549,24 @@
                     }
                 }
 
-                    if (data['events'] != undefined) {
-                        config.dataTable.index += 1;
-                        config.events.indexes[0] = config.dataTable.index;
-                        config.dataTable.index += 1;
-                        config.events.indexes[1] = config.dataTable.index;
-    
-                        config.events.values = data['events']['signals'];
-                        config.events.first = config.events.values.shift();
-    
-                        dataTable.addColumn('number', 'Marker');
-                        dataTable.addColumn({type:'string', role:'annotation'});
-    
-                        if (data['events']['profit'] != undefined) {
-                            profit = "$" + String(Math.round(data['events']['profit'] * 100) / 100);
-                            $('#profit').html("Change:" + profit);
-                        }
+                if (data['events'] != undefined) {
+                    config.dataTable.index += 1;
+                    config.events.indexes[0] = config.dataTable.index;
+                    config.dataTable.index += 1;
+                    config.events.indexes[1] = config.dataTable.index;
+
+                    config.events.values = data['events']['signals'];
+                    config.events.first = config.events.values.shift();
+
+                    dataTable.addColumn('number', 'Marker');
+                    dataTable.addColumn({type:'string', role:'annotation'});
+
+                    if (data['events']['profit'] != undefined) {
+                        profit = "$" + String(Math.round(data['events']['profit'] * 100) / 100);
+                        $('#profit').html("Change:" + profit);
                     }
-                
+                }
+
                 var googleChartData = [];
                 var candles = data["candles"];
 
