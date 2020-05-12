@@ -1,16 +1,18 @@
 package controllers
 
 import (
-	"gotrading/app/models"
-	"gotrading/bitflyer"
-	"gotrading/config"
-	"gotrading/tradingalgo"
 	"log"
 	"strings"
 	"time"
 
 	"github.com/markcheno/go-talib"
+
 	"golang.org/x/sync/semaphore"
+
+	"gotrading/app/models"
+	"gotrading/bitflyer"
+	"gotrading/config"
+	"gotrading/tradingalgo"
 )
 
 type AI struct {
@@ -43,7 +45,7 @@ func NewAI(productCode string, duration time.Duration, pastPeriod int, UsePercen
 		signalEvents = models.GetSignalEventsByCount(1)
 	}
 	codes := strings.Split(productCode, "_")
-	Ai := &AI{
+	Ai = &AI{
 		API:              apiClient,
 		ProductCode:      productCode,
 		CoinCode:         codes[0],
@@ -55,7 +57,7 @@ func NewAI(productCode string, duration time.Duration, pastPeriod int, UsePercen
 		SignalEvents:     signalEvents,
 		TradeSemaphore:   semaphore.NewWeighted(1),
 		BackTest:         backTest,
-		StartTrade:       time.Now().UTC(),
+		StartTrade:       time.Now(),
 		StopLimitPercent: stopLimitPercent,
 	}
 	Ai.UpdateOptimizeParams()
@@ -65,6 +67,7 @@ func NewAI(productCode string, duration time.Duration, pastPeriod int, UsePercen
 func (ai *AI) UpdateOptimizeParams() {
 	df, _ := models.GetAllCandle(ai.ProductCode, ai.Duration, ai.PastPeriod)
 	ai.OptimizedTradeParams = df.OptimizeParams()
+	log.Printf("optimized_trade_params=%+v", ai.OptimizedTradeParams)
 }
 
 func (ai *AI) Buy(candle models.Candle) (childOrderAcceptanceID string, isOrderCompleted bool) {
@@ -83,7 +86,7 @@ func (ai *AI) Sell(candle models.Candle) (childOrderAcceptanceID string, isOrder
 		return "", couldSell
 	}
 
-	//TODO
+	// TODO
 	return childOrderAcceptanceID, isOrderCompleted
 }
 
@@ -189,6 +192,7 @@ func (ai *AI) Trade() {
 			}
 			ai.StopLimit = df.Candles[i].Close * ai.StopLimitPercent
 		}
+
 		if sellPoint > 0 || ai.StopLimit > df.Candles[i].Close {
 			_, isOrderCompleted := ai.Sell(df.Candles[i])
 			if !isOrderCompleted {

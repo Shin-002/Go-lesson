@@ -1,12 +1,12 @@
 package models
 
 import (
-	"gotrading/config"
 	"sort"
 	"time"
 
 	"github.com/markcheno/go-talib"
 
+	"gotrading/config"
 	"gotrading/tradingalgo"
 )
 
